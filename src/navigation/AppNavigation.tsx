@@ -4,6 +4,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 import Home from '../screen/Home';
 import Detail from '../screen/Detail';
+import StatusBar from '../component/StatusBar';
 
 const Stack = createStackNavigator();
 
@@ -11,6 +12,7 @@ const AppNavigation = () => {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
+        <StatusBar />
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen
             name="Home"
