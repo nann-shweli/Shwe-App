@@ -1,13 +1,9 @@
 import {useState} from 'react';
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+
 import {moneyFormat} from '../utils/general';
+import Input from '../component/Input';
 
 const Home = () => {
   const navigation = useNavigation();
@@ -47,16 +43,15 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.headContainer}>
+      <View style={styles.flex1}>
         <Text style={styles.header}>ရွှေတွက်စက်</Text>
 
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>လက်ရှိရွှေစျေးနှုန်း</Text>
-          <TextInput
-            style={styles.input}
+          <Input
+            label="လက်ရှိရွှေစျေးနှုန်း"
             placeholder="ဥပမာ - 3,500,000 mmk"
             value={goldRateRaw}
-            onChangeText={text => {
+            onChangeText={(text: any) => {
               const cleaned = text.replace(/,/g, '');
               if (!isNaN(Number(cleaned))) {
                 const formatted = Number(cleaned).toLocaleString('en-US');
@@ -65,35 +60,31 @@ const Home = () => {
                 setGoldRateRaw('');
               }
             }}
-            keyboardType="numeric"
           />
         </View>
 
         <View style={styles.row}>
-          <View style={styles.inputSmallGroup}>
-            <Text style={styles.label}>ကျပ်</Text>
-            <TextInput
-              style={styles.input}
+          <View style={styles.flex1}>
+            <Input
+              label="ကျပ်"
               placeholder="0"
               value={kyat}
               onChangeText={setKyat}
               keyboardType="numeric"
             />
           </View>
-          <View style={styles.inputSmallGroup}>
-            <Text style={styles.label}>ပဲ</Text>
-            <TextInput
-              style={styles.input}
+          <View style={styles.flex1}>
+            <Input
+              label="ပဲ"
               placeholder="0"
               value={pal}
               onChangeText={setPal}
               keyboardType="numeric"
             />
           </View>
-          <View style={styles.inputSmallGroup}>
-            <Text style={styles.label}>ရွေး</Text>
-            <TextInput
-              style={styles.input}
+          <View style={styles.flex1}>
+            <Input
+              label="ရွေး"
               placeholder="0"
               value={yway}
               onChangeText={setYway}
@@ -135,7 +126,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
-  headContainer: {flex: 1},
   header: {
     fontSize: 22,
     fontWeight: 'bold',
@@ -151,21 +141,8 @@ const styles = StyleSheet.create({
     gap: 10,
     marginBottom: 24,
   },
-  inputSmallGroup: {
+  flex1: {
     flex: 1,
-  },
-  label: {
-    fontSize: 14,
-    marginBottom: 6,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    fontSize: 16,
-    backgroundColor: '#f9f9f9',
   },
   resultBox: {
     padding: 16,
