@@ -1,27 +1,119 @@
-import {useNavigation} from '@react-navigation/native';
+import {useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
+import Input from '../component/Input';
+
 const Detail = () => {
-  const navigation = useNavigation();
+  const [goldRateRaw, setGoldRateRaw] = useState('');
+  const [amount, setAmount] = useState('');
+  const [result, setResult] = useState('');
+
+  const convertYwayToText = (ywayValue: number) => {
+    const KYAT_PER_YWAY = 128;
+    const PAL_PER_YWAY = 8;
+    const kyat = Math.floor(ywayValue / KYAT_PER_YWAY);
+    const remainderAfterKyat = ywayValue % KYAT_PER_YWAY;
+    const pal = Math.floor(remainderAfterKyat / PAL_PER_YWAY);
+    const yway = parseFloat((remainderAfterKyat % PAL_PER_YWAY).toFixed(2));
+
+    let result = '';
+    if (kyat > 0) result += `${kyat} ကျပ် `;
+    if (pal > 0) result += `${pal} ပဲ `;
+    if (yway > 0) result += `${yway} ရွေး`;
+
+    return result.trim() || '0 ရွေး';
+  };
 
   const handleCalaulate = () => {
-    navigation.navigate('Home');
+    const goldRateNumber = parseFloat(goldRateRaw.replace(/,/g, '')) || 0;
+    const amountNumber = parseFloat(amount.replace(/,/g, '')) || 0;
+
+    const oneYwayValue = goldRateNumber / 128;
+    const estimateGetYway = amountNumber / oneYwayValue;
+    setResult(convertYwayToText(estimateGetYway));
   };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={handleCalaulate}>
-        <Text>Detail Screen</Text>
-      </TouchableOpacity>
+      <Input
+        label="လက်ရှိရွှေစျေးနှုန်း"
+        placeholder="ဥပမာ - 3,500,000 mmk"
+        value={goldRateRaw}
+        onChangeText={(text: any) => {
+          const cleaned = text.replace(/,/g, '');
+          if (!isNaN(Number(cleaned))) {
+            const formatted = Number(cleaned).toLocaleString('en-US');
+            setGoldRateRaw(formatted);
+          } else {
+            setGoldRateRaw('');
+          }
+        }}
+      />
+      <Input
+        label="သင့်ငွေပမာဏ"
+        placeholder="1,000,000 mmk"
+        value={amount}
+        onChangeText={(text: any) => {
+          const cleaned = text.replace(/,/g, '');
+          if (!isNaN(Number(cleaned))) {
+            const formatted = Number(cleaned).toLocaleString('en-US');
+            setAmount(formatted);
+          } else {
+            setAmount('');
+          }
+        }}
+      />
+
+      {result !== '' && (
+        <View style={styles.resultBox}>
+          <Text style={styles.resultText}>
+            ခန့်မှန်းရွှေချိန် : {result} ဝန်းကျင်
+          </Text>
+        </View>
+      )}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={handleCalaulate}>
+          <Text style={styles.buttonText}>ခန့်မှန်းရနိုင်သောရွှေ</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
+    padding: 16,
     justifyContent: 'center',
+  },
+  button: {
+    backgroundColor: '#1976d2',
+    paddingVertical: 12,
+    borderRadius: 10,
+    flex: 1,
+  },
+  buttonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  buttonContainer: {flexDirection: 'row', gap: 20, marginTop: 40},
+  clearButton: {justifyContent: 'center'},
+  checkPrice: {right: 0, alignSelf: 'flex-end', marginBottom: 20},
+  textStyle: {fontWeight: 700},
+  resultBox: {
+    padding: 16,
+    backgroundColor: '#e8f5e9',
+    borderRadius: 12,
+    borderColor: '#81c784',
+    borderWidth: 1,
+    marginBottom: 24,
+  },
+  resultText: {
+    fontSize: 18,
+    color: '#2e7d32',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

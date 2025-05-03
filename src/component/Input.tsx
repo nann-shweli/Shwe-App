@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     fontSize: 16,
     backgroundColor: '#f9f9f9',
+    height: 52,
   },
 });
 
