@@ -1,9 +1,10 @@
 import {useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
 import {moneyFormat} from '../utils/general';
 import Input from '../component/Input';
+import Text from '../component/Text';
 
 const Home = () => {
   const navigation = useNavigation();
@@ -17,6 +18,14 @@ const Home = () => {
   const [pal, setPal] = useState('');
   const [yway, setYway] = useState('');
   const [result, setResult] = useState('');
+
+  const handleClear = () => {
+    setGoldRateRaw('');
+    setKyat('');
+    setPal('');
+    setYway('');
+    setResult('');
+  };
 
   const handleCalaulate = () => {
     const goldRateNumber = parseFloat(goldRateRaw.replace(/,/g, '')) || 0;
@@ -32,19 +41,33 @@ const Home = () => {
 
     setResult(finalResult);
   };
-
-  const handleClear = () => {
-    setGoldRateRaw('');
-    setKyat('');
-    setPal('');
-    setYway('');
-    setResult('');
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.flex1}>
-        <Text style={styles.header}>ရွှေတွက်စက်</Text>
+        <View style={styles.header}>
+          <Text size={15} weight={'bold'}>
+            ရွှေစျေးနှုန်း{' '}
+          </Text>
+          <Text size={15} weight={'bold'}>
+            16 ပဲရည် : 7,750,000 MMK
+          </Text>
+        </View>
+        <View style={styles.goldRate}>
+          <Text size={12} style={styles.text}>
+            {' '}
+            15 ပဲရည် : 6,750,000 MMK
+          </Text>
+        </View>
+
+        <TouchableOpacity
+          style={{
+            alignItems: 'center',
+            marginBottom: 25,
+          }}>
+          <Text style={{color: '#1E88E5', textDecorationLine: 'underline'}}>
+            View gold price details
+          </Text>
+        </TouchableOpacity>
 
         <View style={styles.inputGroup}>
           <Input
@@ -103,7 +126,7 @@ const Home = () => {
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={handleCalaulate}>
-            <Text style={styles.buttonText}>တွက်မယ်</Text>
+            <Text style={styles.buttonText}>ရရှိမည့် ငွေပမာဏ တွက်မည်</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
@@ -127,10 +150,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   header: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 24,
-    textAlign: 'center',
+    borderRadius: 30,
+    backgroundColor: '#BBDEFB',
+    height: 150,
+    padding: 16,
+    justifyContent: 'center',
+    gap: 5,
+    opacity: 0.8,
   },
   inputGroup: {
     marginBottom: 20,
@@ -146,23 +172,20 @@ const styles = StyleSheet.create({
   },
   resultBox: {
     padding: 16,
-    backgroundColor: '#e8f5e9',
     borderRadius: 12,
-    borderColor: '#81c784',
-    borderWidth: 1,
-    marginBottom: 24,
   },
   resultText: {
     fontSize: 18,
-    color: '#2e7d32',
+    color: '#F50057',
     fontWeight: 'bold',
     textAlign: 'center',
   },
   button: {
-    backgroundColor: '#1976d2',
+    backgroundColor: '#0D1A2D',
     paddingVertical: 12,
     borderRadius: 10,
     flex: 1,
+    opacity: 0.9,
   },
   buttonText: {
     color: '#fff',
@@ -174,6 +197,16 @@ const styles = StyleSheet.create({
   clearButton: {justifyContent: 'center'},
   checkPrice: {right: 0, alignSelf: 'flex-end', marginBottom: 20},
   textStyle: {fontWeight: 700},
+  goldRate: {
+    borderRadius: 30,
+    backgroundColor: '#ECEFF1',
+    height: 50,
+    paddingHorizontal: 16,
+    justifyContent: 'center',
+    top: -30,
+    marginHorizontal: 50,
+  },
+  text: {alignItems: 'center'},
 });
 
 export default Home;
