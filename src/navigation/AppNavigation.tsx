@@ -11,15 +11,23 @@ const Stack = createStackNavigator();
 const AppNavigation = () => {
   return (
     <SafeAreaProvider>
+      <StatusBar />
       <NavigationContainer>
-        <StatusBar />
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen
             name="Home"
             component={Home}
             options={{headerShown: false}}
           />
-          <Stack.Screen name="Detail" component={Detail} />
+          <Stack.Screen
+            name="Detail"
+            component={Detail}
+            options={{
+              headerShown: true,
+              title: 'ရွှေအလေးချိန် တွက်ချက်ခြင်း',
+              headerBackTitle: '',
+            }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

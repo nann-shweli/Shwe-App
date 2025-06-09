@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {moneyFormat} from '../utils/general';
 import Input from '../component/Input';
@@ -8,6 +9,7 @@ import Text from '../component/Text';
 
 const Home = () => {
   const navigation = useNavigation();
+  const {top} = useSafeAreaInsets();
 
   const handleCheckPrice = () => {
     navigation.navigate('Detail');
@@ -42,7 +44,7 @@ const Home = () => {
     setResult(finalResult);
   };
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {paddingTop: top}]}>
       <View style={styles.flex1}>
         <View style={styles.header}>
           <Text size={15} weight={'bold'}>
@@ -59,12 +61,8 @@ const Home = () => {
           </Text>
         </View>
 
-        <TouchableOpacity
-          style={{
-            alignItems: 'center',
-            marginBottom: 25,
-          }}>
-          <Text style={{color: '#1E88E5', textDecorationLine: 'underline'}}>
+        <TouchableOpacity style={styles.viewGoldDetail}>
+          <Text color={'#1E88E5'} style={styles.underLine}>
             View gold price details
           </Text>
         </TouchableOpacity>
@@ -144,9 +142,9 @@ const Home = () => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
     backgroundColor: '#fff',
-    flex: 1,
     justifyContent: 'center',
   },
   header: {
@@ -207,6 +205,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 50,
   },
   text: {alignItems: 'center'},
+  underLine: {textDecorationLine: 'underline'},
+  viewGoldDetail: {
+    alignItems: 'center',
+    marginBottom: 25,
+  },
 });
 
 export default Home;

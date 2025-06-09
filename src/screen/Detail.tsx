@@ -73,7 +73,7 @@ const Detail = () => {
       )}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleCalaulate}>
-          <Text style={styles.buttonText}>ခန့်မှန်းရနိုင်သောရွှေ</Text>
+          <Text style={styles.buttonText}>ရနိုင်သော ရွှေအလေးချိန် တွက်မည်</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   button: {
-    backgroundColor: '#1976d2',
+    backgroundColor: '#0D1A2D',
     paddingVertical: 12,
     borderRadius: 10,
     flex: 1,
@@ -103,15 +103,11 @@ const styles = StyleSheet.create({
   textStyle: {fontWeight: 700},
   resultBox: {
     padding: 16,
-    backgroundColor: '#e8f5e9',
     borderRadius: 12,
-    borderColor: '#81c784',
-    borderWidth: 1,
-    marginBottom: 24,
   },
   resultText: {
     fontSize: 18,
-    color: '#2e7d32',
+    color: '#F50057',
     fontWeight: 'bold',
     textAlign: 'center',
   },
