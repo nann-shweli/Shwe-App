@@ -11,10 +11,6 @@ const Home = () => {
   const navigation = useNavigation();
   const {top} = useSafeAreaInsets();
 
-  const handleCheckPrice = () => {
-    navigation.navigate('Detail');
-  };
-
   const [goldRateRaw, setGoldRateRaw] = useState('');
   const [kyat, setKyat] = useState('');
   const [pal, setPal] = useState('');
@@ -43,23 +39,34 @@ const Home = () => {
 
     setResult(finalResult);
   };
+
+  const handleCheckPrice = () => {
+    navigation.navigate('Detail');
+  };
+
+  const handlePress = () => {
+    navigation.navigate('MyProperty');
+  };
+
   return (
     <View style={[styles.container, {paddingTop: top}]}>
       <View style={styles.flex1}>
-        <View style={styles.header}>
-          <Text size={15} weight={'bold'}>
-            ရွှေစျေးနှုန်း{' '}
-          </Text>
-          <Text size={15} weight={'bold'}>
-            16 ပဲရည် : 7,750,000 MMK
-          </Text>
-        </View>
-        <View style={styles.goldRate}>
-          <Text size={12} style={styles.text}>
-            {' '}
-            15 ပဲရည် : 6,750,000 MMK
-          </Text>
-        </View>
+        <TouchableOpacity onPress={handlePress}>
+          <View style={styles.header}>
+            <Text size={15} weight={'bold'}>
+              ရွှေစျေးနှုန်း{' '}
+            </Text>
+            <Text size={15} weight={'bold'}>
+              16 ပဲရည် : 7,750,000 MMK
+            </Text>
+          </View>
+          <View style={styles.goldRate}>
+            <Text size={12} style={styles.text}>
+              {' '}
+              15 ပဲရည် : 6,750,000 MMK
+            </Text>
+          </View>
+        </TouchableOpacity>
 
         <TouchableOpacity style={styles.viewGoldDetail}>
           <Text color={'#1E88E5'} style={styles.underLine}>
