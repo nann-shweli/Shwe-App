@@ -98,7 +98,7 @@ const Home = () => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.viewGoldDetail}>
+        <TouchableOpacity onPress={handlePress} style={styles.viewGoldDetail}>
           <Text color={'#1E88E5'} style={styles.underLine}>
             View gold price details
           </Text>
