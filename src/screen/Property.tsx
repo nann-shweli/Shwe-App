@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {
   View,
   FlatList,
@@ -8,11 +8,15 @@ import {
   TouchableOpacity,
   Modal,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import Text from '../component/Text';
 
 const MMK_PER_YWAY = 50;
+
+const STORAGE_KEY_ITEMS = 'propertyItems';
+const WEIGHT = 'propertyTotalWeight';
 
 const ListHeaderComponent = () => (
   <View style={[styles.itemRow, styles.borderWidth]}>
@@ -32,15 +36,41 @@ const ListHeaderComponent = () => (
 );
 
 const Property = () => {
-  const [items, setItems] = useState([
-    {id: '1', name: 'လက်စွပ်', kyat: 2, pal: 4, yway: 0},
-  ]);
+  const [items, setItems] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
 
   const [newName, setNewName] = useState('');
   const [newKyat, setNewKyat] = useState('');
   const [newPal, setNewPal] = useState('');
   const [newYway, setNewYway] = useState('');
+
+  useEffect(() => {
+    loadItems();
+  }, []);
+
+  useEffect(() => {
+    saveItems();
+  }, [items]);
+
+  const loadItems = async () => {
+    try {
+      const json = await AsyncStorage.getItem(STORAGE_KEY_ITEMS);
+      if (json) {
+        setItems(JSON.parse(json));
+      }
+    } catch (e) {
+      console.error('Failed to load items:', e);
+    }
+  };
+
+  const saveItems = async () => {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(items));
+      await AsyncStorage.setItem(WEIGHT, JSON.stringify(totalWeight));
+    } catch (e) {
+      console.error('Failed to save items:', e);
+    }
+  };
 
   const convertToYway = (kyat, pal, yway) => kyat * 16 * 8 + pal * 8 + yway;
 
@@ -53,7 +83,11 @@ const Property = () => {
     const kyat = Math.floor(total / (16 * 8));
     const pal = Math.floor((total % (16 * 8)) / 8);
     const yway = total % 8;
-    return {kyat, pal, yway};
+    return {
+      kyat,
+      pal: Number(pal.toFixed(2)),
+      yway: Number(yway.toFixed(2)),
+    };
   };
 
   const totalWeight = convertBack(totalYway);
@@ -113,15 +147,19 @@ const Property = () => {
         keyExtractor={item => item.id}
         renderItem={renderItem}
         ListHeaderComponent={ListHeaderComponent}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>
+            You have no property items. Add some!
+          </Text>
+        }
       />
 
       <View style={styles.totalContainer}>
         <Text style={styles.totalTitle}>Total Weight:</Text>
-        <Text style={styles.totalValue}>
-          {totalWeight.kyat} kyat {totalWeight.pal} pal {totalWeight.yway} yway
-        </Text>
-        <Text style={styles.totalValue}>
-          Total MMK: {totalMMK.toLocaleString()}
+        <Text style={[styles.totalValue, styles.bold]}>
+          {totalWeight.kyat ? `${totalWeight.kyat} ကျပ် ` : ''}
+          {totalWeight.pal ? `${totalWeight.pal} ပဲ ` : ''}
+          {totalWeight.yway ? `${totalWeight.yway} ရွေး` : ''}
         </Text>
       </View>
 
@@ -214,7 +252,7 @@ const styles = StyleSheet.create({
   totalContainer: {
     marginTop: 16,
     borderTopWidth: 0.4,
-    paddingTop: 16,
+    paddingVertical: 32,
   },
   totalTitle: {
     fontSize: 18,
@@ -223,6 +261,12 @@ const styles = StyleSheet.create({
   totalValue: {
     fontSize: 16,
     marginTop: 4,
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginVertical: 20,
+    fontSize: 16,
+    color: '#777',
   },
   input: {
     borderWidth: 1,
@@ -252,6 +296,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 12,
   },
+  bold: {fontWeight: 'bold', color: '#F50057'},
 });
 
 export default Property;

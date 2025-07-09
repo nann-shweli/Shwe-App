@@ -14,7 +14,7 @@ const AppNavigation = () => {
     <SafeAreaProvider>
       <StatusBar />
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
+        <Stack.Navigator id={undefined} initialRouteName="Home">
           <Stack.Screen
             name="Home"
             component={Home}

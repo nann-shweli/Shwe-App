@@ -44,7 +44,7 @@
 			<string>MaterialIcons.ttf</string>
 		</array>
 
-		<key>UISupportedInterfaceOrientations</key>cd 
+		<key>UISupportedInterfaceOrientations</key>
 		<array>
 			<string>UIInterfaceOrientationPortrait</string>
 			<string>UIInterfaceOrientationLandscapeLeft</string>

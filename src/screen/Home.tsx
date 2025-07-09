@@ -1,14 +1,20 @@
-import {useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {StackNavigationProp} from '@react-navigation/stack';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import {moneyFormat} from '../utils/general';
 import Input from '../component/Input';
 import Text from '../component/Text';
 
+const WEIGHT = 'propertyTotalWeight';
+type NavigationProp = StackNavigationProp<any>;
+
 const Home = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
   const {top} = useSafeAreaInsets();
 
   const [goldRateRaw, setGoldRateRaw] = useState('');
@@ -16,6 +22,25 @@ const Home = () => {
   const [pal, setPal] = useState('');
   const [yway, setYway] = useState('');
   const [result, setResult] = useState('');
+  const [totalWeight, setTotalWeight] = useState(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      const loadTotalWeight = async () => {
+        try {
+          const json = await AsyncStorage.getItem(WEIGHT);
+          if (json) {
+            setTotalWeight(JSON.parse(json));
+          } else {
+            setTotalWeight(null);
+          }
+        } catch (e) {
+          console.error('Failed to load total weight:', e);
+        }
+      };
+      loadTotalWeight();
+    }, []),
+  );
 
   const handleClear = () => {
     setGoldRateRaw('');
@@ -53,17 +78,22 @@ const Home = () => {
       <View style={styles.flex1}>
         <TouchableOpacity onPress={handlePress}>
           <View style={styles.header}>
-            <Text size={15} weight={'bold'}>
-              ရွှေစျေးနှုန်း{' '}
-            </Text>
-            <Text size={15} weight={'bold'}>
-              16 ပဲရည် : 7,750,000 MMK
-            </Text>
+            <View>
+              <Text size={15} weight={'bold'}>
+                ရွှေစျေးနှုန်း{' '}
+              </Text>
+              <Text size={15} weight={'bold'}>
+                16 ပဲရည် : 7,750,000 MMK
+              </Text>
+            </View>
+            <View>
+              <Icon name="chevron-right" size={22} />
+            </View>
           </View>
           <View style={styles.goldRate}>
             <Text size={12} style={styles.text}>
-              {' '}
-              15 ပဲရည် : 6,750,000 MMK
+              You have Total : {totalWeight?.kyat} ကျပ် {totalWeight?.pal} ပဲ{' '}
+              {totalWeight?.yway} ရွေး
             </Text>
           </View>
         </TouchableOpacity>
@@ -159,9 +189,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#BBDEFB',
     height: 150,
     padding: 16,
-    justifyContent: 'center',
     gap: 5,
     opacity: 0.8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   inputGroup: {
     marginBottom: 20,
@@ -211,7 +243,7 @@ const styles = StyleSheet.create({
     top: -30,
     marginHorizontal: 50,
   },
-  text: {alignItems: 'center'},
+  text: {alignItems: 'center', fontWeight: 'bold'},
   underLine: {textDecorationLine: 'underline'},
   viewGoldDetail: {
     alignItems: 'center',
