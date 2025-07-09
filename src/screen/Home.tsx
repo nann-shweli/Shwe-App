@@ -92,8 +92,14 @@ const Home = () => {
           </View>
           <View style={styles.goldRate}>
             <Text size={12} style={styles.text}>
-              You have Total : {totalWeight?.kyat} ကျပ် {totalWeight?.pal} ပဲ{' '}
-              {totalWeight?.yway} ရွေး
+              You have Total :
+              {totalWeight?.kyat ? ` ${totalWeight.kyat} ကျပ်` : ''}
+              {totalWeight?.pal && totalWeight.pal !== 0
+                ? ` ${Number(totalWeight.pal).toFixed(2)} ပဲ`
+                : ''}
+              {totalWeight?.yway && totalWeight.yway !== 0
+                ? ` ${Number(totalWeight.yway).toFixed(2)} ရွေး`
+                : ''}
             </Text>
           </View>
         </TouchableOpacity>
