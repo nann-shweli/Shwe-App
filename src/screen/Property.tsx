@@ -39,10 +39,15 @@ const Property = () => {
   const [items, setItems] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const [newName, setNewName] = useState('');
-  const [newKyat, setNewKyat] = useState('');
-  const [newPal, setNewPal] = useState('');
-  const [newYway, setNewYway] = useState('');
+  const [form, setForm] = useState({
+    name: '',
+    kyat: '',
+    pal: '',
+    yway: '',
+  });
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     loadItems();
@@ -93,39 +98,82 @@ const Property = () => {
   const totalWeight = convertBack(totalYway);
   const totalMMK = totalYway * MMK_PER_YWAY;
 
-  const addItem = () => {
-    if (!newName.trim()) {
+  const resetForm = () => {
+    setForm({
+      name: '',
+      kyat: '',
+      pal: '',
+      yway: '',
+    });
+    setEditingId(null);
+    setIsEditing(false);
+  };
+
+  const handleSaveItem = () => {
+    if (!form.name.trim()) {
       alert('Please enter item name');
       return;
     }
 
-    const kyatNum = Number(newKyat) || 0;
-    const palNum = Number(newPal) || 0;
-    const ywayNum = Number(newYway) || 0;
+    const kyatNum = Number(form.kyat) || 0;
+    const palNum = Number(form.pal) || 0;
+    const ywayNum = Number(form.yway) || 0;
 
-    const newItem = {
-      id: Date.now().toString(),
-      name: newName.trim(),
-      kyat: kyatNum,
-      pal: palNum,
-      yway: ywayNum,
-    };
+    if (isEditing && editingId !== null) {
+      // Editing existing item
+      const updatedItems = items.map(item =>
+        item.id === editingId
+          ? {
+              ...item,
+              name: form.name.trim(),
+              kyat: kyatNum,
+              pal: palNum,
+              yway: ywayNum,
+            }
+          : item,
+      );
+      setItems(updatedItems);
+    } else {
+      // Adding new item
+      const newItem = {
+        id: Date.now().toString(),
+        name: form.name.trim(),
+        kyat: kyatNum,
+        pal: palNum,
+        yway: ywayNum,
+      };
+      setItems([...items, newItem]);
+    }
 
-    setItems([...items, newItem]);
-    setNewName('');
-    setNewKyat('');
-    setNewPal('');
-    setNewYway('');
-
+    resetForm();
     setModalVisible(false);
   };
 
-  const deleteItem = id => {
+  const handleDelete = id => {
     setItems(items.filter(item => item.id !== id));
   };
 
+  const handleEdit = item => {
+    setIsEditing(true);
+    setEditingId(item.id);
+    setForm({
+      name: item.name,
+      kyat: String(item.kyat),
+      pal: String(item.pal),
+      yway: String(item.yway),
+    });
+    setModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    resetForm();
+    setModalVisible(false);
+  };
+
   const renderItem = ({item}) => (
-    <View style={styles.itemContainer}>
+    <TouchableOpacity
+      onPress={() => handleEdit(item)}
+      style={styles.itemContainer}>
       <View style={[styles.itemRow, styles.borderWidth]}>
         <Text style={styles.columnName}>{item.name}</Text>
         <Text style={styles.column}>{item.kyat}</Text>
@@ -133,11 +181,11 @@ const Property = () => {
         <Text style={styles.column}>{item.yway}</Text>
       </View>
       <TouchableOpacity
-        onPress={() => deleteItem(item.id)}
+        onPress={() => handleDelete(item.id)}
         style={styles.deleteBtn}>
         <Icon name="delete" size={22} color="red" />
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -163,7 +211,13 @@ const Property = () => {
         </Text>
       </View>
 
-      <Button title="Add New Item" onPress={() => setModalVisible(true)} />
+      <Button
+        title="Add New Item"
+        onPress={() => {
+          resetForm();
+          setModalVisible(true);
+        }}
+      />
 
       <Modal
         visible={modalVisible}
@@ -172,39 +226,44 @@ const Property = () => {
         onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Add New Item</Text>
+            <Text style={styles.modalTitle}>
+              {isEditing ? 'Edit Item' : 'Add New Item'}
+            </Text>
 
             <TextInput
               placeholder="Item Name"
-              value={newName}
-              onChangeText={setNewName}
+              value={form.name}
+              onChangeText={text => setForm({...form, name: text})}
               style={styles.input}
             />
             <TextInput
               placeholder="Kyat"
-              value={newKyat}
-              onChangeText={setNewKyat}
+              value={form.kyat}
+              onChangeText={text => setForm({...form, kyat: text})}
               keyboardType="numeric"
               style={styles.input}
             />
             <TextInput
               placeholder="Pal"
-              value={newPal}
-              onChangeText={setNewPal}
+              value={form.pal}
+              onChangeText={text => setForm({...form, pal: text})}
               keyboardType="numeric"
               style={styles.input}
             />
             <TextInput
               placeholder="Yway"
-              value={newYway}
-              onChangeText={setNewYway}
+              value={form.yway}
+              onChangeText={text => setForm({...form, yway: text})}
               keyboardType="numeric"
               style={styles.input}
             />
 
             <View style={styles.modalButtons}>
-              <Button title="Cancel" onPress={() => setModalVisible(false)} />
-              <Button title="Add Item" onPress={addItem} />
+              <Button title="Cancel" onPress={handleCancel} />
+              <Button
+                title={isEditing ? 'Save Changes' : 'Add Item'}
+                onPress={handleSaveItem}
+              />
             </View>
           </View>
         </View>
@@ -296,7 +355,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 12,
   },
-  bold: {fontWeight: 'bold', color: '#F50057'},
+  bold: {
+    fontWeight: 'bold',
+    color: '#F50057',
+  },
 });
 
 export default Property;
